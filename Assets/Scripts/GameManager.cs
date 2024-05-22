@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public GameObject donglePrefab;
     public Transform dongleGroup;
 
+    public int maxLevel;
+
     private void Awake()
     {
         Application.targetFrameRate = 60; // prefab -rigidbody - interplate로 설정하면 부드러운 화면
@@ -29,10 +31,11 @@ public class GameManager : MonoBehaviour
         Dongle newDongle = GetDongle();
         lastDongle = newDongle;
 
-        lastDongle.level = Random.Range(0, 8); // level을 0-7값을 랜덤으로 선택
+        lastDongle.level = Random.Range(0, maxLevel); // level을 0-7값을 랜덤으로 선택
         lastDongle.gameObject.SetActive(true); // 프리팹을 비활성화 시킨 후 SetActive로 오브젝트 활성화
 
         StartCoroutine("WaitNext"); // 코루틴 제어, 파라미터 타입 - 그대로 or String
+        lastDongle.gameManager = this;
 
     }
     // 코루틴 - 로직제어를 유니티에 맡김

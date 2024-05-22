@@ -543,6 +543,7 @@ MonoBehaviour:
   lastDongle: {fileID: 0}
   donglePrefab: {fileID: 5450865120491801532, guid: 60222d91045a3214cbfb4f5115d76e76, type: 3}
   dongleGroup: {fileID: 1875420945}
+  maxLevel: 2
 --- !u!4 &1102178571
 Transform:
   m_ObjectHideFlags: 0
