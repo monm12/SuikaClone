@@ -7,12 +7,13 @@ public class Dongle : MonoBehaviour
     public bool isMerge;
     public int level;
     public bool isDrag;
+    public ParticleSystem effect;
+    public GameManager gameManager;
+
     Rigidbody2D rigid;
     Animator animator;
     CircleCollider2D circle;
-    public GameManager gameManager;
-
-
+  
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -125,6 +126,8 @@ public class Dongle : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         animator.SetInteger("Level", level + 1);
+        EffectPlay();
+
         // 애니메이션 적용 시간 때문에 약간의 시간차 적용
         yield return new WaitForSeconds(0.3f);
         level++;
@@ -134,6 +137,12 @@ public class Dongle : MonoBehaviour
         isMerge = false;
     }
 
+    void EffectPlay()
+    {
+        effect.transform.position = transform.position;
+        effect.transform.localScale = transform.localScale;
+        effect.Play();
+    }
 }
 
 
