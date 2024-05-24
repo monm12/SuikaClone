@@ -10,15 +10,19 @@ public class Dongle : MonoBehaviour
     public ParticleSystem effect;
     public GameManager gameManager;
 
-    Rigidbody2D rigid;
+    public Rigidbody2D rigid;
     Animator animator;
     CircleCollider2D circle;
+    SpriteRenderer spriteRenderer;
+
+    float deadTime;
   
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         circle = GetComponent<CircleCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
     private void OnEnable()
     {
@@ -89,10 +93,16 @@ public class Dongle : MonoBehaviour
     
     public void Hide(Vector3 targetPos)
     {
+
         isMerge = true;
         // 충돌 시 합쳐져짐 -> 특성 끄기
         rigid.simulated = false;
         circle.enabled = false;
+
+        if(targetPos == Vector3.up * 100)
+        {
+            EffectPlay();
+        }
 
         StartCoroutine(HideRoutine(targetPos));
 
@@ -104,10 +114,21 @@ public class Dongle : MonoBehaviour
         while(frameCount < 20)
         {
             frameCount++;
-            transform.position = Vector3.Lerp(transform.position, targetPos, 0.8f);
+            // 기존 레벨업 시
+            if(targetPos != Vector3.up * 100)
+            {
+                transform.position = Vector3.Lerp(transform.position, targetPos, 0.5f);
+                
+            }
+            // 게임오버 시 
+            else if(targetPos != Vector3.up * 100)
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, 0.2f);
+            }
             yield return null; // 1프레임 쉬기
         }
 
+        gameManager.score += (int)Mathf.Pow(2, level);
         isMerge = false;
         gameObject.SetActive(false);
     }
@@ -135,6 +156,32 @@ public class Dongle : MonoBehaviour
         gameManager.maxLevel = Mathf.Max(level, gameManager.maxLevel);
 
         isMerge = false;
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.tag == "Finish")
+        {
+            deadTime += Time.deltaTime;
+
+            if (deadTime > 2)
+            {
+                spriteRenderer.color = Color.red; // or new Color(R, G, B);
+            }
+            if(deadTime > 5)
+            {
+                gameManager.GameOver();
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.tag == "Finish")
+        {
+            deadTime = 0;
+            spriteRenderer.color = Color.white;
+        }
     }
 
     void EffectPlay()
